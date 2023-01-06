@@ -1,0 +1,1 @@
+CREATE TYPE STATUS_ENUM AS ENUM ('pending', 'delivered');

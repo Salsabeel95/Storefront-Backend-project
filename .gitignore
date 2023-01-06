@@ -4,9 +4,6 @@ node_modules
 package-lock.json
 README.udacity.md
 REQUIREMENTS.udacity.md
-src/tests
-migrations
 src/services
-src/middelware
-src/models
-src/handler
+src/tests
+
