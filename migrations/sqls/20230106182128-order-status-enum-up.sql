@@ -1,1 +1,1 @@
-CREATE TYPE STATUS_ENUM AS ENUM ('pending', 'delivered');
+CREATE TYPE STATUS_ENUM AS ENUM ('pending', 'approved', 'delivered', 'declined');
