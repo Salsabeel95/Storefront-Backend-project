@@ -3,6 +3,7 @@ import UsersRoutes from "./handler/users";
 import cors from "cors"
 import morgan from "morgan";
 import productRoutes from "./handler/products";
+import orderRoutes from "./handler/orders";
 const app:express.Application=express()
 const port=5200
 app.use(morgan('dev'))
@@ -14,6 +15,7 @@ app.get("/",(_req:Request,res:Response)=>{
 
 UsersRoutes(app)
 productRoutes(app)
+orderRoutes(app)
 app.listen(port ,()=>{
     console.log("server is connected to port "+port);    
 })

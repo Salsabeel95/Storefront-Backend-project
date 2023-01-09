@@ -2,8 +2,8 @@ import client from "../database"
 import bcrypt from "bcrypt"
 export type User = {
   id: number,
-  firstName: string,
-  lastName: string,
+  email: string,
+  username: string,
   password: string,
   role: string
 }
@@ -23,31 +23,31 @@ export class UserModel {
     }
   }
 
-  static async showByName(firstName: string): Promise<User | null> {
+  static async showByName(email: string): Promise<User | null> {
     try {
       const conn = await client.connect()
-      const sql = 'SELECT * FROM users WHERE firstName=$1;'
-      const result = await conn.query(sql, [firstName])
+      const sql = 'SELECT * FROM users WHERE email=$1;'
+      const result = await conn.query(sql, [email])
       conn.release()
       return result.rows[0]
     } catch (err) {
       throw new Error(`Could not get User. ${err}`)
     }
   }
-  static async create(firstname: string, lastname: string | null, password: string): Promise<User> {
+  static async create(email: string, username: string | null, password: string): Promise<User> {
     try {
-      const sql = 'INSERT INTO users (firstName,lastName,password) VALUES($1,$2,$3) RETURNING *;'
+      const sql = 'INSERT INTO users (email,username,password) VALUES($1,$2,$3) RETURNING *;'
       const conn = await client.connect()
       const hash = bcrypt.hashSync(
         password + UserModel.papper,
         UserModel.saltRounds as number
       );
-      const result = await conn.query(sql, [firstname, lastname, hash])
+      const result = await conn.query(sql, [email, username, hash])
       const User = result.rows[0]
       conn.release()
       return User
     } catch (err) {
-      throw new Error(`Could not add new User ${firstname}. ${err}`)
+      throw new Error(`Could not add new User ${email}. ${err}`)
     }
   }
   static async show(id: string): Promise<User | null> {
@@ -61,11 +61,11 @@ export class UserModel {
       throw new Error(`Could not get User. ${err}`)
     }
   }
-  static async authentiacte(firstname: string, password: string): Promise<User | null> {
+  static async authentiacte(email: string, password: string): Promise<User | null> {
     try {
-      const sql = 'SELECT * FROM users WHERE firstName=($1);'
+      const sql = 'SELECT * FROM users WHERE email=($1);'
       const conn = await client.connect()
-      const result = await conn.query(sql, [firstname])
+      const result = await conn.query(sql, [email])
       const user: User = result.rows[0]
       if (user) {
         if (bcrypt.compareSync(password + UserModel.papper, user.password))

@@ -8,11 +8,10 @@
     "prewatch": "tsc",
     "start": "node dist/",
     "prestart": "tsc",
+    "migrt": "db-migrate create order-Products-table --sql-file",
     "up": "db-migrate up",
-    "down": "db-migrate down",
-    "migrt": "db-migrate create orderProducts-table --sql-file",
-    "pretest": "tsc",
-    "test": "set ENV=test&& db-migrate --env test up && jasmine & db-migrate --env test reset"
+    "reset": "db-migrate reset",
+    "test": "set ENV=test&& npm run up && jasmine-ts && npm run reset"
   },
   "author": "",
   "license": "ISC",

@@ -3,7 +3,7 @@ import jwt, { Secret } from "jsonwebtoken"
 type tokenPayload = {
     user: {
       id: number;
-      firstName: string;
+      email: string;
       role: string;
     };
     iat: number;

@@ -24,37 +24,37 @@ const show = async (req: Request, res: Response): Promise<void> => {
     }
 }
 const create = async (req: Request, res: Response): Promise<void> => {
-    const firstname = req.body.firstname as string
-    const lastname = req.body.lastname as string || null
+    const email = req.body.email as string
+    const username = req.body.username as string || null
     const password = req.body.password as string
     try {
-        const usernameExists: User | null = await UserModel.showByName(firstname)
+        const usernameExists: User | null = await UserModel.showByName(email)
         if (usernameExists)
-            res.status(409).json({ data: {}, message: "can't create user ,first name: " + firstname + " is already used" })
+            res.status(409).json({ data: {}, message: "can't create user ,first name: " + email + " is already used" })
         else {
-            const user: User = await UserModel.create(firstname, lastname, password)
+            const user: User = await UserModel.create(email, username, password)
             if (user) {
-                const { password, lastName, ...userInPayload } = user
+                const { password, username, ...userInPayload } = user
                 const token = jwt.sign({ user: userInPayload }, process.env.TOKEN_SECRET as string)
-                res.status(200).json({ data: { token: token }, message: "created user successfully with name=" + firstname })
+                res.status(200).json({ data: { token: token }, message: "created user successfully with email=" + email })
             }
-            !user && res.status(404).json({ data: {}, message: "can't create user with name=" + firstname })
+            !user && res.status(404).json({ data: {}, message: "can't create user with email=" + email })
         }
     } catch (error) {
         res.status(500).json({ message: "can't craete user! " + error })
     }
 }
 const login = async (req: Request, res: Response): Promise<void> => {
-    const firstname = req.body.firstname as string
+    const email = req.body.email as string
     const password = req.body.password as string
     try {
-        const user: User | null = await UserModel.authentiacte(firstname, password)
+        const user: User | null = await UserModel.authentiacte(email, password)
         if (user) {
-            const { password, lastName, ...userInPayload } = user
+            const { password, username, ...userInPayload } = user
             const token = jwt.sign({ user: userInPayload }, process.env.TOKEN_SECRET as string)
-            res.status(200).json({ data: { token: token }, message: "user login with name=" + firstname })
+            res.status(200).json({ data: { token: token }, message: "user login with email=" + email })
         }
-        else res.status(400).json({ data: {}, message: "Wrong name or password" })
+        else res.status(400).json({ data: {}, message: "Wrong email or password" })
 
     } catch (error) {
         res.status(500).json({ message: "can't login user! " + error })
