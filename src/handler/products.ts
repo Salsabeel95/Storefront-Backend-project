@@ -1,7 +1,8 @@
 import express, { Request, Response } from "express";
 import { Product, ProductModel } from "../models/product";
 import { verifyAuthToken, verifyAuthAdminRole } from "../middelware/AuthToken";
-import { validatProductInfo } from "../middelware/validations";
+import { validationErrors } from "../middelware/validations";
+import { check } from "express-validator";
 
 
 const index = async (_req: Request, res: Response): Promise<void> => {
@@ -24,27 +25,23 @@ const show = async (req: Request, res: Response): Promise<void> => {
     }
 }
 const showByCategory = async (req: Request, res: Response): Promise<void> => {
-    const category = req.params.category as string 
+    const category = req.params.category as string
     try {
-        if (!category) {
-            res.status(404).json({ data: [], message: "Must provide category !" })
-        }else{
-            const data: Product[] | null = await ProductModel.showByCategory(category)
-            data && res.status(200).json({ data: data, message: "got product" })
-            !data && res.status(404).json({ data: [], message: "There is no product with category: " + category + " !" })
-        }
+        const data: Product[] | null = await ProductModel.showByCategory(category)
+        data && res.status(200).json({ data: data, message: "got product" })
+        !data && res.status(404).json({ data: [], message: "There is no product with category: " + category + " !" })
     } catch (error) {
         res.status(500).json({ message: "can't get products !" + error })
     }
 }
 const create = async (req: Request, res: Response): Promise<void> => {
     const name = req.body.name
-    const price  = req.body.price
+    const price = req.body.price
     const category = req.body.category
     try {
-        const data: Product = await ProductModel.create(name, category,price)
-        data && res.status(200).json({ data: data, message: "created Product with name=" + name})
-        !data && res.status(404).json({ data: {}, message: "can't create Product with name=" + name })
+        const data: Product = await ProductModel.create(name, category, price)
+        data.name && res.status(200).json({ data: data, message: "created Product with name=" + name })
+        !data.name && res.status(404).json({ data: {}, message: "can't create Product with name=" + name })
     } catch (error) {
         res.status(500).json({ message: "can't craete Product! " + error })
     }
@@ -52,20 +49,18 @@ const create = async (req: Request, res: Response): Promise<void> => {
 const destroy = async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id as string
     try {
-        if (id) {
-            const data: Product = await ProductModel.delete(id)
-            data && res.status(200).json({ data: data, message: "Deleted product with id=" + id })
-            !data && res.status(404).json({ data: {}, message: "There is no product with id=" + id })
-        }
+        const data: Product = await ProductModel.delete(id)
+        data && res.status(200).json({ data: data, message: "Deleted product with id=" + id })
+        !data && res.status(404).json({ data: {}, message: "There is no product with id=" + id })
     } catch (error) {
         res.status(500).json({ message: "Can't delete products!" + error })
     }
 }
 const productRoutes = (app: express.Application) => {
     app.get('/product', index)
-    app.post('/product/add',verifyAuthToken, validatProductInfo, create)
-    app.get('/product/:id', show)
-    app.get('/product/category/:category', showByCategory)
-    app.delete('/product/:id', verifyAuthAdminRole, destroy)
+    app.post('/product/add', verifyAuthToken, check('name').notEmpty().withMessage("Must provide a product name"), check('price').notEmpty().withMessage("Must provide a product price"), validationErrors, create)
+    app.get('/product/:id', check('id').notEmpty().withMessage("Must provide a product id"), validationErrors, show)
+    app.get('/product/category/:category', check('category').notEmpty().withMessage("Must provide a category name"), validationErrors, showByCategory)
+    app.delete('/product/:id', verifyAuthAdminRole, check('id').notEmpty().withMessage("Must provide a product id to delete"), validationErrors, destroy)
 }
 export default productRoutes;

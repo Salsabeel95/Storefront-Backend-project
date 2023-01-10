@@ -1,6 +1,5 @@
-import dotenv from "dotenv"
 import { Pool } from "pg";
-dotenv.config();
+import config from "./utilities/config";
 
 const { POSTGRES_HOST,
     POSTGRES_DB,
@@ -8,7 +7,7 @@ const { POSTGRES_HOST,
     POSTGRES_USER,
     POSTGRES_PASSWORD,
     ENV,
-} = process.env
+} = config
 
 let client: Pool = new Pool();
 

@@ -1,5 +1,7 @@
 import client from "../database"
 import bcrypt from "bcrypt"
+import config from "../utilities/config"
+
 export type User = {
   id: number,
   email: string,
@@ -9,8 +11,8 @@ export type User = {
 }
 
 export class UserModel {
-  static readonly papper: string | undefined = process.env.BCRYPT_PASSWORD
-  static readonly saltRounds: number | undefined = parseInt(process.env.SALT_ROUNDS as string)
+  static readonly papper: string | undefined = config.BCRYPT_PASSWORD
+  static readonly saltRounds: number | undefined = parseInt(config.SALT_ROUNDS as string)
   static async index(): Promise<User[]> {
     try {
       const conn = await client.connect()

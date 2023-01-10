@@ -1,18 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-export const validateUserInfo = (req: Request, res: Response, next: NextFunction) => {
-    const email = req.body.email
-    const password = req.body.password 
-    if (!email || !password) {
-        res.status(403).json({ data: {}, message: "Must provide email and password" })
-    }
-    else next()
-}
-export const validatProductInfo = (req: Request, res: Response, next: NextFunction) => {
-    const name  = req.body.name 
-    const price = req.body.price
-    if (!name || !price ) {
-        res.status(403).json({ data: {}, message: "Must provide name and price" })
-    }
+import { validationResult } from "express-validator/src/validation-result";
+export const  validationErrors = (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ message: errors.array().map(err=>err.msg).join(" ,") });
+      }
     else next()
 }
 export const validatUserIdInOrder = (req: Request, res: Response, next: NextFunction) => {
