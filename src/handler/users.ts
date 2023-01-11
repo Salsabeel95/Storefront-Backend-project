@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { User, UserModel } from "../models/users";
 import jwt from "jsonwebtoken"
-import { verifyAuthAdminRole } from "../middelware/AuthToken";
+import { verifyAuthAdminRole, verifyAuthToken } from "../middelware/AuthToken";
 import {  validationErrors } from "../middelware/validations";
 import { check, validationResult } from "express-validator";
 import config from "../utilities/config";
@@ -30,8 +30,8 @@ const create = async (req: Request, res: Response): Promise<void> => {
     const username = req.body.username as string || null
     const password = req.body.password as string
     try {
-        const usernameExists: User | null = await UserModel.showByName(email)
-        if (usernameExists)
+        const emailExists: User | null = await UserModel.showByEmail(email)
+        if (emailExists)
             res.status(409).json({ data: {}, message: "can't create user ,email: " + email + " is already used" })
         else {
             const user: User = await UserModel.create(email, username, password)
@@ -44,7 +44,29 @@ const create = async (req: Request, res: Response): Promise<void> => {
         }
     
     } catch (error) {
-        res.status(500).json({ message: "can't craete user! " + error })
+        res.status(500).json({ message: "can't create user! " + error })
+    }
+}
+const createAdmin = async (req: Request, res: Response): Promise<void> => {
+    const email = req.body.email as string
+    const username = req.body.username as string || null
+    const password = req.body.password as string
+    try {
+        const emailExists: User | null = await UserModel.showByEmail(email)
+        if (emailExists)
+            res.status(409).json({ data: {}, message: "can't create admin ,email: " + email + " is already used" })
+        else {
+            const admin: User = await UserModel.createAdmin(email, username, password)
+            if (admin) {
+                const { password, username, ...userInPayload } = admin
+                const token = jwt.sign({ user: userInPayload }, config.TOKEN_SECRET as string)
+                res.status(200).json({ data: { token: token }, message: "created user successfully with email=" + email })
+            }
+            !admin && res.status(404).json({ data: {}, message: "can't create admin with email=" + email })
+        }
+    
+    } catch (error) {
+        res.status(500).json({ message: "can't create user! " + error })
     }
 }
 const login = async (req: Request, res: Response): Promise<void> => {
@@ -74,10 +96,11 @@ const destroy = async (req: Request, res: Response): Promise<void> => {
     }
 }
 const UserRoutes = (app: express.Application) => {
-    app.get('/user', index)
-    app.get('/user/:id',check('id').notEmpty().withMessage("Must provide a user id"),validationErrors, show)
+    app.get('/user',verifyAuthAdminRole, index)
+    app.get('/user/:id',verifyAuthAdminRole,check('id').notEmpty().withMessage("Must provide a user id"),validationErrors, show)
     app.post('/user/login',check("email").notEmpty().withMessage("Must provide email").isEmail().withMessage("Email must match email format"),check('password').isLength({ min: 5 }).withMessage("password length must be more than 4"),  validationErrors, login)
-    app.post('/user/add',check("email").notEmpty().withMessage("Must provide email").isEmail().withMessage("Email must match email format"),check('password').isLength({ min: 5 }).withMessage("password length must be more than 4"),  validationErrors,  create)
+    app.post('/user/add',verifyAuthAdminRole,check("email").notEmpty().withMessage("Must provide email").isEmail().withMessage("Email must match email format"),check('password').isLength({ min: 5 }).withMessage("password length must be more than 4"),  validationErrors,  create)
+    app.post('/user/admin',check("email").notEmpty().withMessage("Must provide email").isEmail().withMessage("Email must match email format"),check('password').isLength({ min: 5 }).withMessage("password length must be more than 4"),  validationErrors,  createAdmin)
     app.delete('/user/:id', verifyAuthAdminRole,check('id').notEmpty().withMessage("Must provide a user id to delete"),validationErrors, destroy)
 }
 export default UserRoutes;

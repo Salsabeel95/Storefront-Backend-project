@@ -3,12 +3,12 @@ import { Product } from "../models/product"
 
 
 export class DashboardModel{
-    static async staticsNumOrdersInlast7Days(days:number):Promise<{count:number}>{
+    static async staticsNumOrdersInLastDays(days:number):Promise<{count:string}>{
         try {
             const conn = await client.connect()
             const sql = `select count(id) from orders
             where status='delivered' and 
-            order_date< current_date-${days}`
+            order_date::date<= current_date-${days}`
             const result = await conn.query(sql)
             conn.release()
             return result.rows[0]
@@ -17,7 +17,7 @@ export class DashboardModel{
           }
 
     }
-    static async staticsTotalIncomeInlast7Days(days:number):Promise<{total:number}>{
+    static async staticsTotalIncomeInLastDays(days:number):Promise<{total:string}>{
         try {
             const conn = await client.connect()
             const sql = `select sum(quantity*price) as total
@@ -25,7 +25,7 @@ export class DashboardModel{
             on o.id =op.order_id
             join products p on op.product_id=p.id
             where status='delivered' and 
-            order_date< current_date-${days}`
+            order_date::date<= current_date-${days}`
             const result = await conn.query(sql)
             conn.release()
             return result.rows[0]
@@ -34,7 +34,7 @@ export class DashboardModel{
           }
 
     }
-    static async most3UsersOrders():Promise<{user_id: number,orders_count: number}[]>{
+    static async most3UsersOrders():Promise<{user_id: number,orders_count: string}[]>{
         try {
             const conn = await client.connect()
             const sql = `with cte as  
@@ -51,14 +51,14 @@ export class DashboardModel{
             throw new Error(`Could not get users. ${err}`)
           }
     }
-    static async popular5Products():Promise<Product[]>{
+    static async popular5Products():Promise<{product_id:string,count:string}[]>{
         try {
             const conn = await client.connect()
             const sql = `with cte as (
-                        SELECT product_id,sum(quantity) FROM 
+                        SELECT product_id,sum(quantity) as count FROM 
                         order_products group by product_id
                     ) 
-                    select * from cte order by sum desc limit 5`
+                    select * from cte order by count desc limit 5`
             const result = await conn.query(sql)
             conn.release()
             return result.rows
@@ -66,7 +66,7 @@ export class DashboardModel{
             throw new Error(`Could not get products. ${err}`)
           }
     }
-    static async popular3Category():Promise<{category:string,rank:number}[]>{
+    static async popular3Category():Promise<{category:string,rank:string}[]>{
         try {
             const conn = await client.connect()
             const sql = `with cte as 
@@ -81,7 +81,7 @@ export class DashboardModel{
                 select distinct category ,dense_rank() over ( order by sum desc) as rank 
                 from cte
             ) as t
-            where rank<=3`
+            where rank<=3 order by rank `
             const result = await conn.query(sql)
             conn.release()
             return result.rows

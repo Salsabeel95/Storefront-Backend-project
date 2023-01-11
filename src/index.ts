@@ -21,3 +21,5 @@ dashboardRoutes(app)
 app.listen(port ,()=>{
     console.log("server is connected to port "+port);    
 })
+
+export default app

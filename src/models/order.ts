@@ -1,15 +1,20 @@
 import client from "../database"
 
 export type Order = {
-  id: number,
-  userId: number,
-  status: string,
-  orderDate: Date,
-  total:number,
-  products:productsInOrder[]
+  id?: number,
+  user_id: number,
+  status?: string,
+  order_date?: Date,
+  total?:number,
+}
+export type OrderProducts={
+  id: number;
+  order_id: number;
+  product_id: number;
+  quantity: number;
 }
 export type productsInOrder={
-  id: number;
+  id?: number;
   price: number;
   name: string;
   category: string;
@@ -27,6 +32,17 @@ export class OrderModel {
       throw new Error(`Could not get Order.  ${err}`)
     }
   }
+  static async show(orderId:string): Promise<Order> {    
+    try {
+      const conn = await client.connect()
+      const sql = 'SELECT * FROM orders WHERE id=$1;'      
+      const result = await conn.query(sql,[+orderId])
+      conn.release()      
+      return result.rows[0]
+    } catch (err) {
+      throw new Error(`Could not get Order.  ${err}`)
+    }
+  }
   
   static async create(userId: string): Promise<Order> {
     try {
@@ -40,7 +56,7 @@ export class OrderModel {
       throw new Error(`Could not add new Order with user ${userId}. ${err}`)
     }
   }
-  private static async checkIfProdInOrder(ordId: string,prodId: string):Promise<boolean>{
+   static async checkIfProdInOrder(ordId: string,prodId: string):Promise<boolean>{
     try {
       const sql = 'SELECT * FROM order_products WHERE order_id=$1 AND product_id=$2;'
       const conn = await client.connect()
@@ -76,12 +92,7 @@ export class OrderModel {
       throw new Error(`Could not get pending Order with user ${usrId}. ${error}`)
     }
   }
-  static async addProduct(ordId: string,prodId: string,quantity:number): Promise<{
-    id: number,
-    userId: number,
-    productId: number,
-    quantity:number
-  }> {
+  static async addProduct(ordId: string,prodId: string,quantity:number): Promise<OrderProducts> {
     try {
       const sqlInsert = 'INSERT INTO order_products (order_id,product_id,quantity) VALUES($1,$2,$3) RETURNING *;'
       const sqlUpdate = 'UPDATE order_products SET quantity=quantity+$3 WHERE order_id=$1 AND product_id=$2 RETURNING *;'
@@ -89,10 +100,10 @@ export class OrderModel {
       const conn = await client.connect()
       const result = await conn.query(sql, [+ordId,+prodId,quantity])
       const ordPrd:{
-        id: number,
-        userId: number,
-        productId: number,
-        quantity:number
+        id: number;
+        order_id: number;
+        product_id: number;
+        quantity: number;
       } = result.rows[0]
       conn.release()
       return ordPrd
@@ -112,7 +123,7 @@ export class OrderModel {
       throw new Error(`Could get Order ${ordId} . ${error}`)
     }
   }
-  static async showUserOrder(userId: string): Promise<Order>{
+  static async showUserCurrentOrder(userId: string): Promise<Order>{
     try {
       const sql = "select o.id, o.status,o.order_date,o.user_id from orders o where o.status = 'pending' and user_id=$1 order by order_date desc"
       const conn = await client.connect()

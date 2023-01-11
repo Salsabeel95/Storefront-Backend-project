@@ -5,7 +5,7 @@ import { DashboardModel } from "../services/dashboard";
 
 const mostPopular5Products = async (_req: Request, res: Response): Promise<void> => {
     try {
-        const data:Product[] = await DashboardModel.popular5Products()
+        const data:{product_id:string,count:string}[] = await DashboardModel.popular5Products()
         data.length > 0 && res.status(200).json({ data: data, message: "got most 5 popular products" })
         data.length <= 0 && res.status(404).json({ data: [], message: "there is no products ordered yet !" })
     } catch (error) {
@@ -14,7 +14,7 @@ const mostPopular5Products = async (_req: Request, res: Response): Promise<void>
 }
 const mostPopular3category = async (_req: Request, res: Response): Promise<void> => {
     try {
-        const data:{category: string,rank: number}[] = await DashboardModel.popular3Category()
+        const data:{category: string,rank: string}[] = await DashboardModel.popular3Category()
         data.length > 0 && res.status(200).json({ data: data, message: "got most 3 popular category" })
         data.length <= 0 && res.status(404).json({ data: [], message: "there is no category yet !" })
     } catch (error) {
@@ -23,7 +23,7 @@ const mostPopular3category = async (_req: Request, res: Response): Promise<void>
 }
 const most3UsersOrdering = async (_req: Request, res: Response): Promise<void> => {
     try {
-        const data:{user_id: number,orders_count: number}[] = await DashboardModel.most3UsersOrders()
+        const data:{user_id: number,orders_count: string}[] = await DashboardModel.most3UsersOrders()
         data.length > 0 && res.status(200).json({ data: data, message: "got most 3 users made orders" })
         data.length <= 0 && res.status(404).json({ data: [], message: "there is no orders yet !" })
     } catch (error) {
@@ -31,19 +31,19 @@ const most3UsersOrdering = async (_req: Request, res: Response): Promise<void> =
     }
 }
 const showOrdersNumber = async (req: Request, res: Response): Promise<void> => {
-    const days =req.query.days  as unknown as number || 7
+    const days =req.query.days  as unknown as number || 0
     try {
-        const data:{count: number} = await DashboardModel.staticsNumOrdersInlast7Days(days)
-        data.count  && res.status(200).json({ data: data, message: "got no orders in last "+days+" days" })
+        const data:{count: string} = await DashboardModel.staticsNumOrdersInLastDays(days)
+        data.count  && res.status(200).json({ data: data, message: "got no. orders in last "+days+" days" })
         !data.count  && res.status(404).json({ data: [], message: "there is orders !" })
     } catch (error) {
         res.status(500).json({ message: "can't get no orders in last "+days+" days !" + error })
     }
 }
 const showOrdersTotalIncome = async (req: Request, res: Response): Promise<void> => {
-    const days =req.query.days  as unknown as number || 7
+    const days =req.query.days  as unknown as number || 0
     try {
-        const data:{total: number} = await DashboardModel.staticsTotalIncomeInlast7Days(days)
+        const data:{total: string} = await DashboardModel.staticsTotalIncomeInLastDays(days)
         data.total  && res.status(200).json({ data: data, message: "got total income in last "+days+" days" })
         !data.total && res.status(404).json({ data: [], message: "there is no income yet !" })
     } catch (error) {

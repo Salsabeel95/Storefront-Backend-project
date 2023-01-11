@@ -58,7 +58,7 @@ const destroy = async (req: Request, res: Response): Promise<void> => {
 }
 const productRoutes = (app: express.Application) => {
     app.get('/product', index)
-    app.post('/product/add', verifyAuthToken, check('name').notEmpty().withMessage("Must provide a product name"), check('price').notEmpty().withMessage("Must provide a product price"), validationErrors, create)
+    app.post('/product/add', verifyAuthAdminRole, check('name').notEmpty().withMessage("Must provide a product name").matches("/^[a-zA-Z].*/").withMessage("Product name must start with character"), check('price').notEmpty().withMessage("Must provide a product price"), validationErrors, create)
     app.get('/product/:id', check('id').notEmpty().withMessage("Must provide a product id"), validationErrors, show)
     app.get('/product/category/:category', check('category').notEmpty().withMessage("Must provide a category name"), validationErrors, showByCategory)
     app.delete('/product/:id', verifyAuthAdminRole, check('id').notEmpty().withMessage("Must provide a product id to delete"), validationErrors, destroy)

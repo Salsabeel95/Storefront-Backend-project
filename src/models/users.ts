@@ -3,11 +3,11 @@ import bcrypt from "bcrypt"
 import config from "../utilities/config"
 
 export type User = {
-  id: number,
+  id?: number,
   email: string,
   username: string,
   password: string,
-  role: string
+  role?: string
 }
 
 export class UserModel {
@@ -21,11 +21,11 @@ export class UserModel {
       conn.release()
       return result.rows
     } catch (err) {
-      throw new Error(`Could not get User. ${err}`)
+      throw new Error(`Could not get user. ${err}`)
     }
   }
 
-  static async showByName(email: string): Promise<User | null> {
+  static async showByEmail(email: string): Promise<User | null> {
     try {
       const conn = await client.connect()
       const sql = 'SELECT * FROM users WHERE email=$1;'
@@ -33,7 +33,7 @@ export class UserModel {
       conn.release()
       return result.rows[0]
     } catch (err) {
-      throw new Error(`Could not get User. ${err}`)
+      throw new Error(`Could not get user. ${err}`)
     }
   }
   static async create(email: string, username: string | null, password: string): Promise<User> {
@@ -49,7 +49,23 @@ export class UserModel {
       conn.release()
       return User
     } catch (err) {
-      throw new Error(`Could not add new User ${email}. ${err}`)
+      throw new Error(`Could not add new user ${email}. ${err}`)
+    }
+  }
+  static async createAdmin(email: string, username: string | null, password: string): Promise<User> {
+    try {
+      const sql = "INSERT INTO users (email,username,password,role) VALUES($1,$2,$3,'admin') RETURNING *;"
+      const conn = await client.connect()
+      const hash = bcrypt.hashSync(
+        password + UserModel.papper,
+        UserModel.saltRounds as number
+      );
+      const result = await conn.query(sql, [email, username, hash])
+      const User = result.rows[0]
+      conn.release()
+      return User
+    } catch (err) {
+      throw new Error(`Could not add new admin ${email}. ${err}`)
     }
   }
   static async show(id: string): Promise<User | null> {
@@ -60,7 +76,7 @@ export class UserModel {
       conn.release()
       return result.rows[0]
     } catch (err) {
-      throw new Error(`Could not get User. ${err}`)
+      throw new Error(`Could not get user. ${err}`)
     }
   }
   static async authentiacte(email: string, password: string): Promise<User | null> {
@@ -76,7 +92,7 @@ export class UserModel {
       conn.release()
       return null
     } catch (err) {
-      throw new Error(`${err}`)
+      throw new Error(`Could not login user. ${err}`)
     }
   }
 

@@ -2,8 +2,9 @@ import jwt, { Secret } from "jsonwebtoken"
 import { Request } from "express";
 import { productsInOrder } from "../models/order";
 import config from "./config";
+import client from "../database";
 
-type tokenPayload = {
+export type tokenPayload = {
     user: {
         id: number;
         email: string;
@@ -24,4 +25,36 @@ export const decodedToken = (req: Request): {
 
 export const calculateTotalForOrder = (products: productsInOrder[]): number => {
     return products.reduce((acc, curr) => acc + curr.price*curr.quantity, 0)
+}
+
+
+export const truncateOrdersTable=async():Promise<void>=>{
+  try {
+      const conn = await client.connect()
+      const sql = `DELETE FROM orders`
+       await conn.query(sql)
+      conn.release()
+    } catch (err) {
+      throw new Error(`Could not delete orders. ${err}`)
+    }
+}
+export const truncateProductsTable=async():Promise<void>=>{
+  try {
+      const conn = await client.connect()
+      const sql = `DELETE FROM products`
+       await conn.query(sql)
+      conn.release()
+    } catch (err) {
+      throw new Error(`Could not delete products. ${err}`)
+    }
+}
+export const truncateUsersTable=async():Promise<void>=>{
+  try {
+      const conn = await client.connect()
+      const sql = `DELETE FROM users`
+       await conn.query(sql)
+      conn.release()
+    } catch (err) {
+      throw new Error(`Could not delete users. ${err}`)
+    }
 }
