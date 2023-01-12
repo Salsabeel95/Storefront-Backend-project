@@ -1,6 +1,6 @@
 import { User, UserModel } from "../../models/users";
 
-xdescribe("User model", () => {
+describe("User model", () => {
   it('should have an index method', () => {
     expect(UserModel.index).toBeDefined();
   });
@@ -49,7 +49,7 @@ xdescribe("User model", () => {
     expect(result.length).toBe(1)
   })
   it('delete method should remove the user with email test@test.com', async () => {
-    UserModel.delete(createdUser.id as unknown as string);
+   await UserModel.delete(createdUser.id as unknown as string);
     const result:User[] = (await UserModel.index()) as User[]
     expect(result).toEqual([]);
   });

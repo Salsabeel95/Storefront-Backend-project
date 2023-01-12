@@ -1,6 +1,6 @@
 import { Product, ProductModel } from "../../models/product";
 
-xdescribe("Product model", () => {
+describe("Product model", () => {
     it('should have an index method', () => {
       expect(ProductModel.index).toBeDefined();
     });
@@ -35,13 +35,15 @@ xdescribe("Product model", () => {
     it('index method should return a list of products of length 1', async () => {
       const result:Product[] = await ProductModel.index()as Product[]
       expect(result.length).toBe(1)
+      expect(result[0].name).toBe(createdProduct.name)
     })
     it('showBycategory method should return a list of products of 1 thats in just-created product category', async () => {
       const result:Product[] = await ProductModel.showByCategory(createdProduct.category as string)as Product[]
       expect(result.length).toBe(1)
+      expect(result[0].name).toBe(createdProduct.name)
     })
     it('delete method should remove the just-created product', async () => {
-      ProductModel.delete(createdProduct.id as unknown as string);
+      await ProductModel.delete(createdProduct.id as unknown as string);
       const result:Product[] = await ProductModel.index()as unknown as Product[]
       expect(result).toEqual([]);
     });

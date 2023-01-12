@@ -99,7 +99,7 @@ const UserRoutes = (app: express.Application) => {
     app.get('/user',verifyAuthAdminRole, index)
     app.get('/user/:id',verifyAuthAdminRole,check('id').notEmpty().withMessage("Must provide a user id"),validationErrors, show)
     app.post('/user/login',check("email").notEmpty().withMessage("Must provide email").isEmail().withMessage("Email must match email format"),check('password').isLength({ min: 5 }).withMessage("password length must be more than 4"),  validationErrors, login)
-    app.post('/user/add',verifyAuthAdminRole,check("email").notEmpty().withMessage("Must provide email").isEmail().withMessage("Email must match email format"),check('password').isLength({ min: 5 }).withMessage("password length must be more than 4"),  validationErrors,  create)
+    app.post('/user/signup',check("email").notEmpty().withMessage("Must provide email").isEmail().withMessage("Email must match email format"),check('password').isLength({ min: 5 }).withMessage("password length must be more than 4"),  validationErrors,  create)
     app.post('/user/admin',check("email").notEmpty().withMessage("Must provide email").isEmail().withMessage("Email must match email format"),check('password').isLength({ min: 5 }).withMessage("password length must be more than 4"),  validationErrors,  createAdmin)
     app.delete('/user/:id', verifyAuthAdminRole,check('id').notEmpty().withMessage("Must provide a user id to delete"),validationErrors, destroy)
 }

@@ -70,7 +70,7 @@ const showOrderProducts = async (req: Request, res: Response): Promise<void> => 
                 const resData = { user_id: user.id, order_id: +orderId, products, total }
                 res.status(200).json({ data: resData, message: "got order products with id=" + orderId })
             }
-            else res.status(404).json({ data: {}, message: "There are no products in order with id=" + orderId })
+            else res.status(404).json({ data: {}, message: "There are no products in order with id=" + orderId+" yet" })
     } catch (error) {
         res.status(500).json({ message: "can't get order products in this order! " + error })
     }
@@ -79,13 +79,16 @@ const showByUserId = async (req: Request, res: Response): Promise<void> => {
     const userId: string = req.params.id
     try {
         const order = await OrderModel.showUserCurrentOrder(userId)
-        const products: productsInOrder[] = await OrderModel.indexProducts(order.id as unknown as string)
-        if (order && products.length) {
-            const total = calculateTotalForOrder(products)
-            const resData = { ...order, products, total }
-            res.status(200).json({ data: resData, message: "got order products for user id=" + userId })
+        if (order) {
+            const products: productsInOrder[] = await OrderModel.indexProducts(order.id as unknown as string)
+            if ( products.length) {                
+                const total = calculateTotalForOrder(products)
+                const resData = { ...order, products, total }
+                res.status(200).json({ data: resData, message: "got current pending order for user id=" + userId })
+            }
+            else res.status(404).json({ data: {}, message: "There are no products in the order yet for user id=" + userId })
         }
-        else res.status(404).json({ data: {}, message: "There are no orders or products for user id=" + userId })
+        else res.status(404).json({ data: {}, message: "There are no pending orders for user id=" + userId+" yet" })
     } catch (error) {
         res.status(500).json({ message: "can't current order! " + error })
     }
@@ -110,7 +113,7 @@ const showCompletedByUserId = async (req: Request, res: Response): Promise<void>
 }
 
 const destroy = async (req: Request, res: Response): Promise<void> => {
-    const id = req.query.id as string
+    const id = req.params.id as string
     try {
             const data: Order = await OrderModel.delete(id)
             data && res.status(200).json({ data: data, message: "deleted order with id=" + id })
@@ -120,13 +123,14 @@ const destroy = async (req: Request, res: Response): Promise<void> => {
     }
 }
 const orderRoutes = (app: express.Application) => {
-    app.get('/order', index)
+    app.get('/order',verifyAuthAdminRole, index)
     app.get('/user/:id/order',verifyAuthToken,check('id').notEmpty().withMessage("Must provide a user id"), validationErrors, showByUserId)
     app.get('/user/:id/order-completed',verifyAuthToken,  check('id').notEmpty().withMessage("Must provide a user id"), validationErrors, showCompletedByUserId)
     app.post('/order/add', verifyAuthToken,  check('userId').notEmpty().withMessage("Must provide a user id"), validationErrors, create)
     app.post('/order/:id/products', verifyAuthToken,check('id').notEmpty().withMessage("Must provide a order id"), check('productId').notEmpty().withMessage("Must provide a product id"), check('quantity').notEmpty().withMessage("Must provide a product quantity"), validationErrors, addToOrder)
     app.get('/order/:id/products', verifyAuthToken,check('id').notEmpty().withMessage("Must provide a order id to show products in"),validationErrors, showOrderProducts)
     app.put('/order/:id', verifyAuthAdminRole,check('id').notEmpty().withMessage("Must provide a order id to deliver it"),validationErrors, deliverOrder)
-    app.delete('/order', verifyAuthAdminRole,check('id').notEmpty().withMessage("Must provide a order id"),validationErrors, destroy)
+    // app.put('/order/:id/cancel', verifyAuthToken,check('id').notEmpty().withMessage("Must provide a order id to deliver it"),validationErrors, cancleOrder)
+    app.delete('/order/:id', verifyAuthAdminRole,check('id').notEmpty().withMessage("Must provide a order id"),validationErrors, destroy)
 }
 export default orderRoutes;

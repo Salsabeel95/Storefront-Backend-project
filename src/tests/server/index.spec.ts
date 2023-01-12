@@ -133,7 +133,7 @@ describe("Routes tests", () => {
     })
     describe("Creation validations routes tests", () => {
         it("Create user route with pre-used email failed", async () => {
-            const response = await request.post("/user/add").set({ Authorization: adminToken }).send({
+            const response = await request.post("/user/signup").send({
                 email: createdUser1.email,
                 password: "123456"
             })
@@ -141,7 +141,7 @@ describe("Routes tests", () => {
             expect(response.text).toContain("already used")
         })
         it("Create user route with wrong email format failed", async () => {
-            const response = await request.post("/user/add").set({ Authorization: adminToken }).send({
+            const response = await request.post("/user/signup").send({
                 email: "test@test",
                 password: "123456"
             })
@@ -224,13 +224,13 @@ describe("Routes tests", () => {
         })
     })
     describe("Dashboard routes tests", () => {
-        it("Dashboard route GET /products/top5 should return the bestseller products of length 2", async () => {
+        it("Dashboard route GET /products/top5 should return the best-seller products of length 2", async () => {
             const response = await request.get("/products/top5").set({ Authorization: adminToken })
             expect(response.status).toBe(200)
             expect(response.body.data.length).toBe(2)
             expect(response.body.data[0].product_id).toBe(createdProduct1.id)
         })
-        it("Dashboard route GET /categories/top3 should return the bestseller category", async () => {
+        it("Dashboard route GET /categories/top3 should return the best-seller category", async () => {
             const response = await request.get("/categories/top3").set({ Authorization: adminToken })
             expect(response.status).toBe(200)
             expect(response.body.data.length).toBe(2)

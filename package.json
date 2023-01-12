@@ -1,16 +1,20 @@
 {
   "name": "postgresql-with-exprss-starter-templete",
   "version": "1.0.0",
-  "description": "",
+  "description": "Storefront is a Node & Postgres db backend for handmade ecommerce project that's enable users to see handmade products and make orders",
   "main": "index.js",
   "scripts": {
-    "watch": "tsc-watch --esModuleInterop src/index.ts --outDir ./dist --onSuccess \"node ./dist/index.js\"",
     "prewatch": "tsc",
-    "start": "node dist/",
+    "watch": "tsc-watch --esModuleInterop src/index.ts --outDir ./dist --onSuccess \"node ./dist/index.js\"",
     "prestart": "tsc",
+    "start": "node dist/",
     "migrt": "db-migrate create order-Products-table --sql-file",
     "up": "db-migrate up --e test",
+    "down": "db-migrate down --e test",
     "reset": "db-migrate reset --e test",
+    "dev:up": "db-migrate up ",
+    "dev:down": "db-migrate down ",
+    "dev:reset": "db-migrate reset ",
     "pretest": "tsc",
     "test": "npm run reset&&set ENV=test&& npm run up && jasmine && npm run reset"
   },
@@ -40,7 +44,6 @@
     "@types/supertest": "^2.0.12",
     "jasmine": "^4.5.0",
     "jasmine-spec-reporter": "^7.0.0",
-    "jasmine-ts": "^0.4.0",
     "supertest": "^6.3.3",
     "ts-node": "^10.9.1",
     "tsc-watch": "^6.0.0"
