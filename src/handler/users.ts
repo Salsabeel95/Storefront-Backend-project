@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken"
 import { verifyAuthAdminRole, verifyAuthToken } from "../middelware/AuthToken";
 import {  validationErrors } from "../middelware/validations";
 import { check, validationResult } from "express-validator";
-import config from "../utilities/config";
+import config from "../shared/config";
 
 const index = async (_req: Request, res: Response): Promise<void> => {
     try {

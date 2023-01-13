@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { Secret } from "jsonwebtoken"
-import config from "../utilities/config";
+import config from "../shared/config";
 
 type tokenPayload = {
     user: {

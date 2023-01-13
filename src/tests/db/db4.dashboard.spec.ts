@@ -2,7 +2,7 @@ import { Order, OrderModel, productsInOrder } from "../../models/order";
 import { Product, ProductModel } from "../../models/product";
 import { User, UserModel } from "../../models/users";
 import { DashboardModel } from "../../services/dashboard";
-import { calculateTotalForOrder, truncateOrdersTable, truncateProductsTable, truncateUsersTable } from "../../utilities/utilities";
+import { calculateTotalForOrder, truncateOrdersTable, truncateProductsTable, truncateUsersTable } from "../../shared/utilities";
 
 describe("Dashbaord model", () => {
 

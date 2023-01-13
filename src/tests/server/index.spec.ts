@@ -3,8 +3,8 @@ import app from '../..'
 import { OrderModel, Order, productsInOrder } from '../../models/order'
 import { Product, ProductModel } from '../../models/product'
 import { User, UserModel } from '../../models/users'
-import config from '../../utilities/config'
-import { calculateTotalForOrder, tokenPayload, truncateOrdersTable, truncateProductsTable, truncateUsersTable } from '../../utilities/utilities'
+import config from '../../shared/config'
+import { calculateTotalForOrder, tokenPayload, truncateOrdersTable, truncateProductsTable, truncateUsersTable } from '../../shared/utilities'
 import jwt, { Secret } from "jsonwebtoken"
 const request = supertest(app)
 

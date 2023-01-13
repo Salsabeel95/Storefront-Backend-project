@@ -1,7 +1,7 @@
 import { Order, OrderModel, OrderProducts } from "../../models/order";
 import { Product, ProductModel } from "../../models/product";
 import { User, UserModel } from "../../models/users";
-import {  truncateOrdersTable, truncateProductsTable, truncateUsersTable } from "../../utilities/utilities";
+import {  truncateOrdersTable, truncateProductsTable, truncateUsersTable } from "../../shared/utilities";
 
 let createdUser1: User;
 let createdProduct1: Product;

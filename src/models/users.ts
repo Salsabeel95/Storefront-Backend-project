@@ -1,6 +1,6 @@
 import client from "../database"
 import bcrypt from "bcrypt"
-import config from "../utilities/config"
+import config from "../shared/config"
 
 export type User = {
   id?: number,

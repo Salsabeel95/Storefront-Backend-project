@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { Order, OrderModel, productsInOrder } from "../models/order";
 import { verifyAuthToken, verifyAuthAdminRole } from "../middelware/AuthToken";
 import { validatUserIdInOrder, validatOrderProductsInfo,  validationErrors } from "../middelware/validations";
-import { calculateTotalForOrder, decodedToken } from "../utilities/utilities";
+import { calculateTotalForOrder, decodedToken } from "../shared/utilities";
 import { check } from "express-validator";
 
 const index = async (_req: Request, res: Response): Promise<void> => {

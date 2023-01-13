@@ -2,6 +2,8 @@ import dotenv from "dotenv"
 dotenv.config();
 
 const config = {
+    SERVER_PORT: process.env.SERVER_PORT || 5200,
+    POSTGRES_PORT: process.env.POSTGRES_PORT || 5432,
     POSTGRES_HOST: process.env.POSTGRES_HOST || "127.0.0.1",
     POSTGRES_DB: process.env.POSTGRES_DB || "storedb",
     POSTGRES_DB_TEST: process.env.POSTGRES_DB_TEST || "storedb_test",

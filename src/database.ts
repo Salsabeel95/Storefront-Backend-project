@@ -1,7 +1,9 @@
 import { Pool } from "pg";
-import config from "./utilities/config";
+import config from "./shared/config";
 
-const { POSTGRES_HOST,
+const { 
+  POSTGRES_HOST,
+  POSTGRES_PORT,
     POSTGRES_DB,
     POSTGRES_DB_TEST,
     POSTGRES_USER,
@@ -16,13 +18,15 @@ if (ENV?.trim() == 'test') {
     host: POSTGRES_HOST,
     database: POSTGRES_DB_TEST,
     user: POSTGRES_USER,
-    password: POSTGRES_PASSWORD
+    password: POSTGRES_PASSWORD,
+    port: +POSTGRES_PORT
   });
 }
 
 if (ENV?.trim() == 'dev') {
-    client = new Pool({
-      host: POSTGRES_HOST,
+  client = new Pool({
+    host: POSTGRES_HOST,
+    port: +POSTGRES_PORT,
       database: POSTGRES_DB,
       user: POSTGRES_USER,
       password: POSTGRES_PASSWORD

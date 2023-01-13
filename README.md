@@ -26,7 +26,9 @@ For development, you will only need Node.js , a node global package  and install
 ### 3.Project configration
 >  Note: Simply No configrations needed to provide. Configration will be used automatically from `src/utilities/config.ts` file, *So make sure to check it first*.
 
-#### Or you can create your own `.env` file in root directory with variables:
+#### Or you can create your own `.env` file in the root directory with variables:
+* SERVER_PORT
+* POSTGRES_PORT
 * POSTGRES_HOST
 * POSTGRES_DB
 * POSTGRES_DB_TEST
@@ -48,7 +50,8 @@ psql –U postgres
 create user [user name] with encrypted password '[your password]';
 grant all privileges on database [database name] to [user name];
 ```
-> Note: For more details check [this](https://linuxhint.com/connect-to-postgresql-database-command-line-windows/)
+> Note: Database defualt port is 5432 but you can change it in `src/utilities/config.ts`. For more details about postgres check [this](https://linuxhint.com/connect-to-postgresql-database-command-line-windows/)
+
 ### 4.Setting up database tables and structure with migration in development enviroment
 
 ```
@@ -64,7 +67,7 @@ grant all privileges on database [database name] to [user name];
 ```
   npm start
 ```
-  ##### you should see this after starting project in terminal/cmd
+  ##### Server will run on 5200 port, you should see this after starting project in terminal/cmd
 ```
   server started at localhost:5200
 ```
@@ -99,6 +102,8 @@ This will run db and server tests in `src/tests`
 ## API Endpoints
  API documentation can be found in `REQUIRMENTS.md` file.
 
+> If you prefer postman, here are all routes with HTTP verbs and endpoints in my workspace
+ [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/17871201-26dd97ef-9a8b-4af2-b64a-2a65694c89dd?action=collection%2Ffork&collection-url=entityId%3D17871201-26dd97ef-9a8b-4af2-b64a-2a65694c89dd%26entityType%3Dcollection%26workspaceId%3D80ffffcc-149f-4589-a46a-5deb03de20e2)
 ## Technology stack:
 - [typescript](https://www.npmjs.com/package/typescript) : For development.
 - [pg](https://www.npmjs.com/package/pg) : PostgreSQL client for Node.js.
