@@ -8,7 +8,7 @@
     "watch": "tsc-watch --esModuleInterop src/index.ts --outDir ./dist --onSuccess \"node ./dist/index.js\"",
     "prestart": "tsc",
     "start": "node dist/",
-    "migrt": "db-migrate create order-Products-table --sql-file",
+    "migrt": "db-migrate create getCompletedOrderCount-function --sql-file",
     "up": "db-migrate up --e test",
     "down": "db-migrate down --e test",
     "reset": "db-migrate reset --e test",

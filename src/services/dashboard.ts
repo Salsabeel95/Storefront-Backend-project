@@ -6,10 +6,8 @@ export class DashboardModel{
     static async staticsNumOrdersInLastDays(days:number):Promise<{count:string}>{
         try {
             const conn = await client.connect()
-            const sql = `select count(id) from orders
-            where status='delivered' and 
-            order_date::date<= current_date-${days}`
-            const result = await conn.query(sql)
+            const sql = `select getOrderCountInLastDays($1) as count`
+            const result = await conn.query(sql,[days])
             conn.release()
             return result.rows[0]
           } catch (err) {
@@ -20,19 +18,13 @@ export class DashboardModel{
     static async staticsTotalIncomeInLastDays(days:number):Promise<{total:string}>{
         try {
             const conn = await client.connect()
-            const sql = `select sum(quantity*price) as total
-            from orders o join order_products op 
-            on o.id =op.order_id
-            join products p on op.product_id=p.id
-            where status='delivered' and 
-            order_date::date<= current_date-${days}`
-            const result = await conn.query(sql)
+            const sql = `select getTotalIncomeInLastDays($1) as total`
+            const result = await conn.query(sql,[days])
             conn.release()
             return result.rows[0]
           } catch (err) {
             throw new Error(`Could not get total income. ${err}`)
           }
-
     }
     static async most3UsersOrders():Promise<{user_id: number,orders_count: string}[]>{
         try {

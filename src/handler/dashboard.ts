@@ -34,20 +34,20 @@ const showOrdersNumber = async (req: Request, res: Response): Promise<void> => {
     const days =req.query.days  as unknown as number || 0
     try {
         const data:{count: string} = await DashboardModel.staticsNumOrdersInLastDays(days)
-        data.count  && res.status(200).json({ data: data, message: "got no. orders in last "+days+" days" })
+        data.count  && res.status(200).json({ data: data, message: "got no. orders for "+(days!=0?"the last "+days+" days":'today') })
         !data.count  && res.status(404).json({ data: [], message: "there is orders !" })
     } catch (error) {
-        res.status(500).json({ message: "can't get no orders in last "+days+" days !" + error })
+        res.status(500).json({ message: "can't get no orders for "+(days!=0?"the last "+days+" days":'today')+" !" + error })
     }
 }
 const showOrdersTotalIncome = async (req: Request, res: Response): Promise<void> => {
     const days =req.query.days  as unknown as number || 0
     try {
         const data:{total: string} = await DashboardModel.staticsTotalIncomeInLastDays(days)
-        data.total  && res.status(200).json({ data: data, message: "got total income in last "+days+" days" })
+        data.total  && res.status(200).json({ data: data, message: "got total income for "+(days!=0?"the last "+days+" days":'today') })
         !data.total && res.status(404).json({ data: [], message: "there is no income yet !" })
     } catch (error) {
-        res.status(500).json({ message: "can't get total income in last "+days+" days !" + error })
+        res.status(500).json({ message: "can't get total income for "+(days!=0?"the last "+days+" days":'today')+" !" + error })
     }
 }
 
